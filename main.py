@@ -2,9 +2,8 @@ import socket
 import smtplib
 import json
 
-from pprint import pprint
-from email.MIMEMultipart import MIMEMultipart
-from email.MIMEText import MIMEText
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 from apscheduler.schedulers.blocking import BlockingScheduler
 
 
@@ -42,6 +41,7 @@ def send_email():
     text = msg.as_string()
     server.sendmail(fromaddr, toaddr, text)
     server.quit()
+
 
 # Send email every 4 hours
 scheduler = BlockingScheduler()
