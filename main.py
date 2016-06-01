@@ -31,7 +31,7 @@ def send_email():
     msg = MIMEMultipart()
     msg['From'] = fromaddr
     msg['To'] = toaddr
-    msg['Subject'] = "DEPLOYD IP AND PORT"
+    msg['Subject'] = "Your IP"
 
     body = get_ip()
     msg.attach(MIMEText(body, 'plain'))
@@ -42,7 +42,6 @@ def send_email():
     text = msg.as_string()
     server.sendmail(fromaddr, toaddr, text)
     server.quit()
-
 
 # Send email every 4 hours
 scheduler = BlockingScheduler()
