@@ -23,7 +23,7 @@ def get_ip():
     return ip_address
 
 
-# Send email
+# Send email with all the stuff
 def send_email():
     fromaddr = "deployddetails@gmail.com"
     toaddr = "blackmanrgh@gmail.com"
@@ -61,7 +61,7 @@ def write_ip_to_file():
 # the email and writes the new IP to the txt file
 def ip_compare():
     if check_stored_ip() != get_ip():
-        print 'The IP has changed from ' + check_stored_ip() + ' to ' + get_ip() + ''
+        print 'The IP has changed from ' + check_stored_ip() + ' to ' + get_ip()
         send_email()
         print 'New IP as been sent to specified email'
         write_ip_to_file()
