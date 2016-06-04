@@ -43,7 +43,29 @@ def send_email():
     server.quit()
 
 
-# Send email every 4 hours
+def check_stored_ip():
+    with open('ip.txt', 'r') as data_file:
+        data = data_file.read()
+        stripped_data = data[1:-1]
+        return stripped_data
+
+
+def write_ip_to_file():
+    with open('ip.txt', 'w') as outfile:
+        json.dump(get_ip(), outfile)
+
+
+def ip_compare():
+    if check_stored_ip() != get_ip():
+        print 'The IP has changed from ' + check_stored_ip() + ' to ' + get_ip() + ''
+        send_email()
+        print 'New IP as been sent to specified email'
+        write_ip_to_file()
+        print 'New IP has been written to text file for checking'
+    else:
+        print 'The IP hasn\'t changed'
+
+
 scheduler = BlockingScheduler()
-scheduler.add_job(send_email, 'interval', hours=24)
+scheduler.add_job(ip_compare, 'interval', minutes=5)
 scheduler.start()
