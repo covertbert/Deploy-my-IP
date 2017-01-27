@@ -4,15 +4,10 @@ import json
 import subprocess
 import logging
 
+from bs4 import BeautifulSoup, Tag
 from apscheduler.schedulers.blocking import BlockingScheduler
 
 logging.basicConfig()
-
-# Get password
-def get_password():
-    with open('password.json') as data_file:
-        data = json.load(data_file)
-        return data['password']
 
 
 # Get IP
@@ -21,10 +16,22 @@ def get_ip():
     s.connect(("8.8.8.8", 80))
     return s.getsockname()[0]
 
+
+# Write textfile to HTML
+def write_html():
+    soup = BeautifulSoup(open('dist/index.html'), 'html.parser')
+    ip = soup.findAll('h1', { 'class' : 'ip-address' })[0].string
+    ip.replaceWith(get_ip())
+    html = soup.prettify('utf-8')
+    with open('dist/index.html', 'wb') as file:
+        file.write(html)
+
+
 # Send email with all the stuff
 def deploy_ip():
     bashCommand = 'firebase deploy'
     subprocess.check_output(['bash','-c', bashCommand])
+
 
 # Checks the IP stored in ip.txt and returns it
 def check_stored_ip():
@@ -44,13 +51,13 @@ def write_ip_to_file():
 # the email and writes the new IP to the txt file
 def ip_compare():
     if check_stored_ip() != get_ip():
-        print 'The IP has changed from ' + check_stored_ip() + ' to ' + get_ip()
-        deploy_ip()
-        print 'New IP as been sent to specified email'
+        print 'The IP has changed' 
         write_ip_to_file()
         print 'New IP has been written to text file for checking'
-    else:
+        write_html()
+        print 'New IP has been written to HTML file for deployment'
         deploy_ip()
+    else:
         print 'The IP hasn\'t changed'
 
 # Writes initial IP to text file when the script starts just in case the txt file doesn't already exist.
@@ -58,5 +65,5 @@ write_ip_to_file()
 
 # Runs the ip_compare function every 5 minutes
 scheduler = BlockingScheduler()
-scheduler.add_job(ip_compare, 'interval', minutes=5)
+scheduler.add_job(ip_compare, 'interval', minutes=1)
 scheduler.start()
